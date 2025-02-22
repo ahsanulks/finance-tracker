@@ -6,13 +6,12 @@ import (
 	"financetracker/internal/entity"
 	"financetracker/internal/usecase"
 	"testing"
-	"time"
 )
 
 func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
 	type args struct {
 		ctx    context.Context
-		period time.Time
+		period entity.TransactionPeriod
 	}
 	tests := []struct {
 		name    string
@@ -25,7 +24,7 @@ func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
 			thu:  &usecase.TransactionHistoryUsecase{},
 			args: args{
 				ctx:    context.Background(),
-				period: time.Date(2025, 1, 1, 0, 0, 0, 0, time.Local),
+				period: entity.TransactionPeriod{},
 			},
 			wantErr: true,
 		},
@@ -35,7 +34,7 @@ func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
 			thu := usecase.NewTransactionHistoryUsecase(
 				new(FakeTransactionHistoryGetter),
 			)
-			if err := thu.GenerateHistoryByPeriod(tt.args.ctx, tt.args.date); (err != nil) != tt.wantErr {
+			if err := thu.GenerateHistoryByPeriod(tt.args.ctx, tt.args.period); (err != nil) != tt.wantErr {
 				t.Errorf("TransactionHistoryUsecase.GenerateHistoryByPeriod() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -46,6 +45,6 @@ var _ usecase.TransactionHistoryGetter = new(FakeTransactionHistoryGetter)
 
 type FakeTransactionHistoryGetter struct{}
 
-func (f *FakeTransactionHistoryGetter) FetchByPeriod(ctx context.Context, period time.Time) ([]*entity.Transaction, error) {
+func (f *FakeTransactionHistoryGetter) FetchByPeriod(ctx context.Context, period entity.TransactionPeriod) ([]*entity.Transaction, error) {
 	return nil, errors.New("error when fetch transaction history")
 }

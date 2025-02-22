@@ -1,10 +1,13 @@
 package entity
 
-import "time"
-
 type TransactionHistory struct {
-	period           time.Time
+	period           TransactionPeriod
 	totalIncome      int64
 	totalExpenditure int64
 	transactions     []*Transaction
+}
+
+type TransactionPeriod struct {
+	year  int
+	month int
 }

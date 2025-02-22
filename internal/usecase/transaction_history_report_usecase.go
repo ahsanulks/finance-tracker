@@ -3,11 +3,10 @@ package usecase
 import (
 	"context"
 	"financetracker/internal/entity"
-	"time"
 )
 
 type TransactionHistoryGetter interface {
-	FetchByPeriod(ctx context.Context, period time.Time) ([]*entity.Transaction, error)
+	FetchByPeriod(ctx context.Context, period entity.TransactionPeriod) ([]*entity.Transaction, error)
 }
 
 type TransactionHistoryUsecase struct {
@@ -24,7 +23,7 @@ func NewTransactionHistoryUsecase(
 
 func (thu *TransactionHistoryUsecase) GenerateHistoryByPeriod(
 	ctx context.Context,
-	period time.Time,
+	period entity.TransactionPeriod,
 ) error {
 	_, err := thu.transactionHistoryGetter.FetchByPeriod(ctx, period)
 	if err != nil {
