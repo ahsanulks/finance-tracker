@@ -46,3 +46,13 @@ date,amount,content
 - Data format assumptions:
   - The CSV file follows a structured format.
   - The amount field uses negative values for expenses and positive values for income.
+
+## Workflow
+```mermaid
+flowchart TB
+    A[Understand the Problem] --> B[Analyze Constraints & Conditions]
+    B --> C[Define Functional/Non-Functional Requirements and Additional Considerations]
+```
+1. Understand the Problem: Carefully read and analyze the problem statement. Ensure all key details are noted.
+2. Analyze Constraints & Conditions: Identify any specific constraints, assumptions, or conditions that the solution must adhere to.
+3. Define Functional/Non-Functional Requirements and Additional Considerations: List the essential features and behaviors the application must support. Look for edge cases, ambiguities, or undefined scenarios that may impact the solution.
