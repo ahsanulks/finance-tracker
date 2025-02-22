@@ -57,12 +57,14 @@ To achieve this, we need to separate the business logic layer from the data laye
 In Golang, we can achieve this separation by using interfaces, which allow us to abstract the output mechanism while keeping the business logic intact.
 
 #### Hexagonal Architecture (Ports and Adapters)
+![Hexagonal Architecture](doc/image/hexagonal_architecture.png)
 A structured approach to achieving this separation is Hexagonal Architecture, also known as Ports and Adapters Architecture. This pattern ensures that:
 - The business logic layer (core domain) is independent of external systems.
 - External systems interact with the core domain through ports (interfaces).
 - Implementations (adapters) can be swapped easily without modifying the business logic.
 - It becomes easier to test the business logic using test doubles for external dependencies.
 #### Clean Architecture
+![Clean Architecture](doc/image/clean_architecture.jpg)
 While Hexagonal Architecture focuses on isolating the business logic from external systems, it does not specify how to structure the business logic itself. For a more structured and maintainable approach, we can adopt Clean Architecture, which introduces two key layers within the business logic:
 
 - Entities: Contain enterprise-wide business rules that are independent of any specific application.
