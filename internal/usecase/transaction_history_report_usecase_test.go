@@ -15,18 +15,24 @@ func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		thu     *usecase.TransactionHistoryUsecase
 		args    args
 		wantErr bool
 	}{
 		{
 			name: "when failed get transaction history, should return error",
-			thu:  &usecase.TransactionHistoryUsecase{},
 			args: args{
 				ctx:    context.Background(),
 				period: entity.TransactionPeriod{},
 			},
 			wantErr: true,
+		},
+		{
+			name: "when success get transaction history, should write generate transaction history report",
+			args: args{
+				ctx:    context.Background(),
+				period: entity.TransactionPeriod{},
+			},
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
