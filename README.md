@@ -75,9 +75,9 @@ Clean Architecture follows the same dependency rules as Hexagonal Architecture b
 While both Hexagonal Architecture and Clean Architecture focus on separating business logic from external concerns, Clean Architecture provides a clearer structure by explicitly distinguishing Entities and Use Cases.
 
 By adopting Clean Architecture, we achieve:
-✅ Better Separation of Concerns – Business rules are clearly defined and independent of external systems.
-✅ Easier Maintainability – Future enhancements (e.g., changing JSON output to a file) won’t affect the core business logic.
-✅ Improved Testability – Business logic can be tested independently using test doubles.
+- Better Separation of Concerns – Business rules are clearly defined and independent of external systems.
+- Easier Maintainability – Future enhancements (e.g., changing JSON output to a file) won’t affect the core business logic.
+- Improved Testability – Business logic can be tested independently using test doubles.
 
 Thus, for our project, we will implement **Clean Architecture** to ensure flexibility, scalability, and maintainability while keeping dependencies well structured.
 
