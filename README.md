@@ -47,6 +47,40 @@ date,amount,content
   - The CSV file follows a structured format.
   - The amount field uses negative values for expenses and positive values for income.
 
+## Design Decision
+### Architecture Design
+To ensure future enhancements, such as changing the output format from JSON to a file, our architecture should be designed in a way that allows seamless modifications without affecting the business logic layer.
+
+To achieve this, we need to separate the business logic layer from the data layer. This separation ensures that the business logic remains isolated and independent of how the data is output, as long as the output meets the required specifications.
+
+#### Using Interfaces in Golang
+In Golang, we can achieve this separation by using interfaces, which allow us to abstract the output mechanism while keeping the business logic intact.
+
+#### Hexagonal Architecture (Ports and Adapters)
+![Hexagonal Architecture](doc/image/hexagonal_architecture.png)
+A structured approach to achieving this separation is Hexagonal Architecture, also known as Ports and Adapters Architecture. This pattern ensures that:
+- The business logic layer (core domain) is independent of external systems.
+- External systems interact with the core domain through ports (interfaces).
+- Implementations (adapters) can be swapped easily without modifying the business logic.
+- It becomes easier to test the business logic using test doubles for external dependencies.
+#### Clean Architecture
+![Clean Architecture](doc/image/clean_architecture.jpg)
+While Hexagonal Architecture focuses on isolating the business logic from external systems, it does not specify how to structure the business logic itself. For a more structured and maintainable approach, we can adopt Clean Architecture, which introduces two key layers within the business logic:
+
+- Entities: Contain enterprise-wide business rules that are independent of any specific application.
+- Use Cases: Define application-specific business rules and orchestrate how entities interact.
+Clean Architecture follows the same dependency rules as Hexagonal Architecture but further refines how business logic is organized.
+
+#### Conclusion
+While both Hexagonal Architecture and Clean Architecture focus on separating business logic from external concerns, Clean Architecture provides a clearer structure by explicitly distinguishing Entities and Use Cases.
+
+By adopting Clean Architecture, we achieve:
+✅ Better Separation of Concerns – Business rules are clearly defined and independent of external systems.
+✅ Easier Maintainability – Future enhancements (e.g., changing JSON output to a file) won’t affect the core business logic.
+✅ Improved Testability – Business logic can be tested independently using test doubles.
+
+Thus, for our project, we will implement **Clean Architecture** to ensure flexibility, scalability, and maintainability while keeping dependencies well structured.
+
 ## Workflow
 ```mermaid
 flowchart TB
