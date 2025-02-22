@@ -75,9 +75,9 @@ Clean Architecture follows the same dependency rules as Hexagonal Architecture b
 While both Hexagonal Architecture and Clean Architecture focus on separating business logic from external concerns, Clean Architecture provides a clearer structure by explicitly distinguishing Entities and Use Cases.
 
 By adopting Clean Architecture, we achieve:
-✅ Better Separation of Concerns – Business rules are clearly defined and independent of external systems.
-✅ Easier Maintainability – Future enhancements (e.g., changing JSON output to a file) won’t affect the core business logic.
-✅ Improved Testability – Business logic can be tested independently using test doubles.
+- Better Separation of Concerns – Business rules are clearly defined and independent of external systems.
+- Easier Maintainability – Future enhancements (e.g., changing JSON output to a file) won’t affect the core business logic.
+- Improved Testability – Business logic can be tested independently using test doubles.
 
 Thus, for our project, we will implement **Clean Architecture** to ensure flexibility, scalability, and maintainability while keeping dependencies well structured.
 
@@ -86,7 +86,9 @@ Thus, for our project, we will implement **Clean Architecture** to ensure flexib
 flowchart TB
     A[Understand the Problem] --> B[Analyze Constraints & Conditions]
     B --> C[Define Functional/Non-Functional Requirements and Additional Considerations]
+    C --> D[Design Architecture Application]
 ```
 1. Understand the Problem: Carefully read and analyze the problem statement. Ensure all key details are noted.
 2. Analyze Constraints & Conditions: Identify any specific constraints, assumptions, or conditions that the solution must adhere to.
 3. Define Functional/Non-Functional Requirements and Additional Considerations: List the essential features and behaviors the application must support. Look for edge cases, ambiguities, or undefined scenarios that may impact the solution.
+4. Design Architecture Application: Evaluate the architecture to accommodate future modifications, such as changing the output format (JSON to file) without affecting business logic.
