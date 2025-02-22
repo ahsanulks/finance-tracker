@@ -22,11 +22,11 @@ func NewTransactionHistoryUsecase(
 	}
 }
 
-func (thu *TransactionHistoryUsecase) GenerateHistoryByDate(
+func (thu *TransactionHistoryUsecase) GenerateHistoryByPeriod(
 	ctx context.Context,
-	date time.Time,
+	period time.Time,
 ) error {
-	_, err := thu.transactionHistoryGetter.FetchByPeriod(ctx, date)
+	_, err := thu.transactionHistoryGetter.FetchByPeriod(ctx, period)
 	if err != nil {
 		return err
 	}

@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-func TestTransactionHistoryUsecase_GenerateHistoryByDate(t *testing.T) {
+func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
 	type args struct {
-		ctx  context.Context
-		date time.Time
+		ctx    context.Context
+		period time.Time
 	}
 	tests := []struct {
 		name    string
@@ -24,8 +24,8 @@ func TestTransactionHistoryUsecase_GenerateHistoryByDate(t *testing.T) {
 			name: "when failed get transaction history, should return error",
 			thu:  &usecase.TransactionHistoryUsecase{},
 			args: args{
-				ctx:  context.Background(),
-				date: time.Date(2025, 1, 1, 0, 0, 0, 0, time.Local),
+				ctx:    context.Background(),
+				period: time.Date(2025, 1, 1, 0, 0, 0, 0, time.Local),
 			},
 			wantErr: true,
 		},
@@ -35,8 +35,8 @@ func TestTransactionHistoryUsecase_GenerateHistoryByDate(t *testing.T) {
 			thu := usecase.NewTransactionHistoryUsecase(
 				new(FakeTransactionHistoryGetter),
 			)
-			if err := thu.GenerateHistoryByDate(tt.args.ctx, tt.args.date); (err != nil) != tt.wantErr {
-				t.Errorf("TransactionHistoryUsecase.GenerateHistoryByDate() error = %v, wantErr %v", err, tt.wantErr)
+			if err := thu.GenerateHistoryByPeriod(tt.args.ctx, tt.args.date); (err != nil) != tt.wantErr {
+				t.Errorf("TransactionHistoryUsecase.GenerateHistoryByPeriod() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
