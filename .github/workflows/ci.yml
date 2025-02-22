@@ -1,0 +1,23 @@
+name: CI Pipeline
+
+on:
+    pull_request:
+      branches:
+        - main
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Go environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+    
+      - name: Run Tests
+        run: make test
