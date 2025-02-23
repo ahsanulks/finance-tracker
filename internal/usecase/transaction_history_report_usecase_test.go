@@ -7,6 +7,8 @@ import (
 	"financetracker/internal/usecase"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
@@ -42,9 +44,7 @@ func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			thu := usecase.NewTransactionHistoryUsecase(
 				newFakeTransactionHistoryGetter(),
-				&SpyTransactionHistoryWriter{
-					t: t,
-				},
+				newSpyTransactionHistoryWriter(t),
 			)
 			if err := thu.GenerateHistoryByPeriod(tt.args.ctx, tt.args.period); (err != nil) != tt.wantErr {
 				t.Errorf("TransactionHistoryUsecase.GenerateHistoryByPeriod() error = %v, wantErr %v", err, tt.wantErr)
@@ -114,7 +114,13 @@ func (f *FakeTransactionHistoryGetter) FetchByPeriod(ctx context.Context, period
 var _ usecase.TransactionHistoryWriter = new(SpyTransactionHistoryWriter)
 
 type SpyTransactionHistoryWriter struct {
-	t *testing.T
+	assert *assert.Assertions
+}
+
+func newSpyTransactionHistoryWriter(t *testing.T) *SpyTransactionHistoryWriter {
+	return &SpyTransactionHistoryWriter{
+		assert: assert.New(t),
+	}
 }
 
 func (s *SpyTransactionHistoryWriter) Write(ctx context.Context, transactionHistory *entity.TransactionHistory) error {
