@@ -11,8 +11,9 @@ import (
 func TestTransactionHistoryCsvRepository_FetchByPeriodDesc(t *testing.T) {
 	transactionPeriod, _ := entity.NewTransactionPeriod(2025, 2)
 	type args struct {
-		ctx    context.Context
-		period entity.TransactionPeriod
+		ctx      context.Context
+		period   entity.TransactionPeriod
+		filePath string
 	}
 	tests := []struct {
 		name    string
@@ -23,8 +24,9 @@ func TestTransactionHistoryCsvRepository_FetchByPeriodDesc(t *testing.T) {
 		{
 			name: "when failed to read file, should return error",
 			args: args{
-				ctx:    context.Background(),
-				period: transactionPeriod,
+				ctx:      context.Background(),
+				period:   transactionPeriod,
+				filePath: "test123.csv",
 			},
 			want:    nil,
 			wantErr: true,
@@ -32,7 +34,7 @@ func TestTransactionHistoryCsvRepository_FetchByPeriodDesc(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			thc := &repository.TransactionHistoryCsvRepository{}
+			thc := repository.NewTransactionHistoryCsvRepository(tt.args.filePath)
 			got, err := thc.FetchByPeriodDesc(tt.args.ctx, tt.args.period)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TransactionHistoryCsv.FetchByPeriodDesc() error = %v, wantErr %v", err, tt.wantErr)
