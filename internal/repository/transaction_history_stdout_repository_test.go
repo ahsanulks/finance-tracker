@@ -23,7 +23,7 @@ func TestTransactionHistoryStdoutRepository_Write(t *testing.T) {
 		thsr       *repository.TransactionHistoryStdoutRepository
 		args       args
 		wantErr    bool
-		wantResult map[string]any
+		wantResult *repository.TransactionReport
 	}{
 		{
 			name: "should write transaction history in expected format",
@@ -33,30 +33,30 @@ func TestTransactionHistoryStdoutRepository_Write(t *testing.T) {
 				transactionHistory: createValidTransactionHistory(),
 			},
 			wantErr: false,
-			wantResult: map[string]any{
-				"period":            "2024/10",
-				"total_income":      250,
-				"total_expenditure": -300,
-				"transactions": []map[string]any{
+			wantResult: &repository.TransactionReport{
+				Date:         repository.MonthlyDateReport(time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC)),
+				TotalIncome:  250,
+				TotalExpense: -300,
+				Transactions: []*repository.Transaction{
 					{
-						"date":    "2024/10/30",
-						"amount":  "100",
-						"content": "income",
+						Date:    repository.DailyDateReport(time.Date(2024, 10, 30, 0, 0, 0, 0, time.UTC)),
+						Amount:  "100",
+						Content: "income",
 					},
 					{
-						"date":    "2024/10/15",
-						"amount":  "-250",
-						"content": "buy stuff",
+						Date:    repository.DailyDateReport(time.Date(2024, 10, 15, 0, 0, 0, 0, time.UTC)),
+						Amount:  "-250",
+						Content: "buy stuff",
 					},
 					{
-						"date":    "2024/10/2",
-						"amount":  "-50",
-						"content": "buy snack",
+						Date:    repository.DailyDateReport(time.Date(2024, 10, 2, 0, 0, 0, 0, time.UTC)),
+						Amount:  "-50",
+						Content: "buy snack",
 					},
 					{
-						"date":    "2024/10/1",
-						"amount":  "150",
-						"content": "income last month",
+						Date:    repository.DailyDateReport(time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC)),
+						Amount:  "150",
+						Content: "income last month",
 					},
 				},
 			},
@@ -78,8 +78,8 @@ func TestTransactionHistoryStdoutRepository_Write(t *testing.T) {
 			var buf bytes.Buffer
 			_, _ = buf.ReadFrom(r)
 			os.Stdout = oldStdout
-			expectedOutput, _ := json.Marshal(tt.wantResult)
-			assert.Equal(string(expectedOutput), buf.String())
+			expectedOutput, _ := json.MarshalIndent(tt.wantResult, "", "  ")
+			assert.Equal(string(expectedOutput)+"\n", buf.String())
 		})
 	}
 }
