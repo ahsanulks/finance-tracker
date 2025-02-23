@@ -18,6 +18,7 @@ func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
 	}
 
 	transaction2025JanPeriod, _ := entity.NewTransactionPeriod(2025, 1)
+	transaction2024JanPeriod, _ := entity.NewTransactionPeriod(2024, 1)
 	tests := []struct {
 		name    string
 		args    args
@@ -38,6 +39,14 @@ func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
 				period: transaction2025JanPeriod,
 			},
 			wantErr: false,
+		},
+		{
+			name: "when failed to write transaction history report, should return error",
+			args: args{
+				ctx:    context.Background(),
+				period: transaction2024JanPeriod,
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
