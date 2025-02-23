@@ -6,10 +6,11 @@ import (
 	"financetracker/internal/repository"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestTransactionCsvRepository_FetchByPeriodDesc(t *testing.T) {
-	transactionPeriod, _ := entity.NewTransactionPeriod(2025, 2)
+	transactionPeriod, _ := entity.NewTransactionPeriod(2022, 1)
 	type args struct {
 		ctx      context.Context
 		period   entity.TransactionPeriod
@@ -40,6 +41,32 @@ func TestTransactionCsvRepository_FetchByPeriodDesc(t *testing.T) {
 			},
 			want:    nil,
 			wantErr: true,
+		},
+		{
+			name: "when read valid format, should return filtered transaction with desc order",
+			args: args{
+				ctx:      context.Background(),
+				period:   transactionPeriod,
+				filePath: "test_data/valid_format.csv",
+			},
+			want: []*entity.Transaction{
+				entity.NewTransaction(
+					time.Date(2022, 1, 25, 0, 0, 0, 0, time.Local), -100000, "rent",
+				),
+				entity.NewTransaction(
+					time.Date(2022, 1, 20, 0, 0, 0, 0, time.Local), 1000, "cash back",
+				),
+				entity.NewTransaction(
+					time.Date(2022, 1, 6, 0, 0, 0, 0, time.Local), -10000, "debit",
+				),
+				entity.NewTransaction(
+					time.Date(2022, 1, 5, 0, 0, 0, 0, time.Local), -1000, "eating out",
+				),
+				entity.NewTransaction(
+					time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local), 1000, "salary",
+				),
+			},
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
