@@ -46,6 +46,8 @@ date,amount,content
 - Data format assumptions:
   - The CSV file follows a structured format.
   - The amount field uses negative values for expenses and positive values for income.
+- Condition assumptions:
+  - If no transactions are found, the program will return an error.
 
 ## Design Decision
 ### Architecture Design
