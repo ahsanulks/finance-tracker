@@ -7,3 +7,7 @@ type Transaction struct {
 	amount  int64
 	content string
 }
+
+func (t Transaction) IsExpense() bool {
+	return t.amount < 0
+}
