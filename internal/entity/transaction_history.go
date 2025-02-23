@@ -45,3 +45,23 @@ func (th *TransactionHistory) calculateTotal(transaction *Transaction) {
 		th.totalIncome += transaction.amount
 	}
 }
+
+func (th *TransactionHistory) YearPeriod() int {
+	return th.period.year
+}
+
+func (th *TransactionHistory) MonthPeriod() int {
+	return th.period.month
+}
+
+func (th *TransactionHistory) TotalIncome() int64 {
+	return th.totalIncome
+}
+
+func (th *TransactionHistory) TotalExpenditure() int64 {
+	return th.totalExpenditure
+}
+
+func (th *TransactionHistory) Transactions() []*Transaction {
+	return th.transactions
+}

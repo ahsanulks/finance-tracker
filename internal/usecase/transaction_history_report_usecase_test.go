@@ -73,16 +73,6 @@ func newFakeTransactionHistoryGetter() *FakeTransactionHistoryGetter {
 				"test transaction expense",
 			),
 			entity.NewTransaction(
-				time.Date(2025, 1, 27, 0, 0, 0, 0, time.Local),
-				500,
-				"test transaction Income 2",
-			),
-			entity.NewTransaction(
-				time.Date(2025, 1, 20, 0, 0, 0, 0, time.Local),
-				-100,
-				"test transaction expense 2",
-			),
-			entity.NewTransaction(
 				time.Date(2025, 2, 1, 0, 0, 0, 0, time.Local),
 				-100,
 				"test transaction expense other period",
@@ -92,6 +82,16 @@ func newFakeTransactionHistoryGetter() *FakeTransactionHistoryGetter {
 				time.Date(2024, 2, 1, 0, 0, 0, 0, time.Local),
 				100,
 				"test transaction income other period",
+			),
+			entity.NewTransaction(
+				time.Date(2025, 1, 27, 0, 0, 0, 0, time.Local),
+				500,
+				"test transaction Income 2",
+			),
+			entity.NewTransaction(
+				time.Date(2025, 1, 20, 0, 0, 0, 0, time.Local),
+				-100,
+				"test transaction expense 2",
 			),
 		},
 	}
@@ -124,5 +124,47 @@ func newSpyTransactionHistoryWriter(t *testing.T) *SpyTransactionHistoryWriter {
 }
 
 func (s *SpyTransactionHistoryWriter) Write(ctx context.Context, transactionHistory *entity.TransactionHistory) error {
+	s.assert.Equal(2025, transactionHistory.YearPeriod())
+	s.assert.Equal(1, transactionHistory.MonthPeriod())
+	s.assert.Equal(4, len(transactionHistory.Transactions()))
+	s.assert.Equal(int64(600), transactionHistory.TotalIncome())
+	s.assert.Equal(int64(-200), transactionHistory.TotalExpenditure())
+	s.assertTransaction(transactionHistory.Transactions())
 	return nil
+}
+
+func (s *SpyTransactionHistoryWriter) assertTransaction(transactions []*entity.Transaction) {
+	expectedTransactions := []ExpectedTransaction{
+		{
+			date:    time.Date(2025, 1, 30, 0, 0, 0, 0, time.Local),
+			amount:  100,
+			content: "test transaction income",
+		},
+		{
+			date:    time.Date(2025, 1, 29, 0, 0, 0, 0, time.Local),
+			amount:  -100,
+			content: "test transaction expense",
+		},
+		{
+			date:    time.Date(2025, 1, 27, 0, 0, 0, 0, time.Local),
+			amount:  500,
+			content: "test transaction Income 2",
+		},
+		{
+			date:    time.Date(2025, 1, 20, 0, 0, 0, 0, time.Local),
+			amount:  -100,
+			content: "test transaction expense 2",
+		},
+	}
+	for index, transaction := range transactions {
+		s.assert.Equal(expectedTransactions[index].date, transaction.Date())
+		s.assert.Equal(expectedTransactions[index].amount, transaction.Amount())
+		s.assert.Equal(expectedTransactions[index].content, transaction.Content())
+	}
+}
+
+type ExpectedTransaction struct {
+	date    time.Time
+	amount  int64
+	content string
 }
