@@ -9,6 +9,7 @@ import (
 )
 
 func TestTransactionHistoryCsvRepository_FetchByPeriodDesc(t *testing.T) {
+	transactionPeriod, _ := entity.NewTransactionPeriod(2025, 2)
 	type args struct {
 		ctx    context.Context
 		period entity.TransactionPeriod
@@ -19,7 +20,15 @@ func TestTransactionHistoryCsvRepository_FetchByPeriodDesc(t *testing.T) {
 		want    []*entity.Transaction
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "when failed to read file, should return error",
+			args: args{
+				ctx:    context.Background(),
+				period: transactionPeriod,
+			},
+			want:    nil,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
