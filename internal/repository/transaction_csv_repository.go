@@ -6,17 +6,17 @@ import (
 	"os"
 )
 
-type TransactionHistoryCsvRepository struct {
+type TransactionCsvRepository struct {
 	filePath string
 }
 
-func NewTransactionHistoryCsvRepository(filePath string) *TransactionHistoryCsvRepository {
-	return &TransactionHistoryCsvRepository{
+func NewTransactionCsvRepository(filePath string) *TransactionCsvRepository {
+	return &TransactionCsvRepository{
 		filePath: filePath,
 	}
 }
 
-func (thc *TransactionHistoryCsvRepository) FetchByPeriodDesc(
+func (thc *TransactionCsvRepository) FetchByPeriodDesc(
 	ctx context.Context,
 	period entity.TransactionPeriod,
 ) ([]*entity.Transaction, error) {

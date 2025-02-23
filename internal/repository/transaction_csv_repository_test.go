@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestTransactionHistoryCsvRepository_FetchByPeriodDesc(t *testing.T) {
+func TestTransactionCsvRepository_FetchByPeriodDesc(t *testing.T) {
 	transactionPeriod, _ := entity.NewTransactionPeriod(2025, 2)
 	type args struct {
 		ctx      context.Context
@@ -34,7 +34,7 @@ func TestTransactionHistoryCsvRepository_FetchByPeriodDesc(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			thc := repository.NewTransactionHistoryCsvRepository(tt.args.filePath)
+			thc := repository.NewTransactionCsvRepository(tt.args.filePath)
 			got, err := thc.FetchByPeriodDesc(tt.args.ctx, tt.args.period)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TransactionHistoryCsv.FetchByPeriodDesc() error = %v, wantErr %v", err, tt.wantErr)
