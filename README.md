@@ -46,6 +46,8 @@ date,amount,content
 - Data format assumptions:
   - The CSV file follows a structured format.
   - The amount field uses negative values for expenses and positive values for income.
+- Condition assumptions:
+  - If no transactions are found, the program will return an error.
 
 ## Design Decision
 ### Architecture Design
@@ -85,10 +87,25 @@ Thus, for our project, we will implement **Clean Architecture** to ensure flexib
 ```mermaid
 flowchart TB
     A[Understand the Problem] --> B[Analyze Constraints & Conditions]
-    B --> C[Define Functional/Non-Functional Requirements and Additional Considerations]
-    C --> D[Design Architecture Application]
+    B --> C[Define Functional/Non-Functional Requirements & Considerations]
+    C --> D[Design Application Architecture]
+    D --> E[Write Failing Test Case]
+    E --> F{Does the test pass?}
+    F -- No --> G[Implement Code]
+    G --> H[Run Tests]
+    H --> F
+    F -- Yes --> I[Refactor Code]
+    I --> J[Review & Optimize]
+    J --> K[Complete Feature]
 ```
 1. Understand the Problem: Carefully read and analyze the problem statement. Ensure all key details are noted.
 2. Analyze Constraints & Conditions: Identify any specific constraints, assumptions, or conditions that the solution must adhere to.
 3. Define Functional/Non-Functional Requirements and Additional Considerations: List the essential features and behaviors the application must support. Look for edge cases, ambiguities, or undefined scenarios that may impact the solution.
 4. Design Architecture Application: Evaluate the architecture to accommodate future modifications, such as changing the output format (JSON to file) without affecting business logic.
+5. Write Failing Test Case – Begin by writing a test case that captures expected behavior but currently fails (TDD approach).
+6. Check if the Test Passes – If the test fails, proceed with implementation. If it passes, move to refactoring.
+7. Implement Code – Develop the feature or fix the bug while keeping tests in mind.
+8. Run Tests – Execute the test suite to verify changes.
+9. Refactor Code – Clean up and optimize the implementation while ensuring the tests still pass.
+10. Review & Optimize – Conduct a final review to improve performance, maintainability, and scalability.
+11. Complete Feature – Finalize and prepare the feature for deployment or merging.
