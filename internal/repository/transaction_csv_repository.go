@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"encoding/csv"
 	"financetracker/internal/entity"
 	"os"
 )
@@ -18,8 +19,17 @@ func NewTransactionCsvRepository(filePath string) *TransactionCsvRepository {
 
 func (thc *TransactionCsvRepository) FetchByPeriodDesc(
 	ctx context.Context,
-	period entity.TransactionPeriod,
+	transactionPeriod entity.TransactionPeriod,
 ) ([]*entity.Transaction, error) {
-	_, err := os.Open(thc.filePath)
+	file, err := os.Open(thc.filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+
+	// skip header
+	_, err = reader.Read()
 	return nil, err
 }
