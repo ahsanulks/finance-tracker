@@ -20,14 +20,12 @@ func TestTransactionHistoryStdoutRepository_Write(t *testing.T) {
 	}
 	tests := []struct {
 		name       string
-		thsr       *repository.TransactionHistoryStdoutRepository
 		args       args
 		wantErr    bool
 		wantResult *repository.TransactionReport
 	}{
 		{
 			name: "should write transaction history in expected format",
-			thsr: &repository.TransactionHistoryStdoutRepository{},
 			args: args{
 				ctx:                context.Background(),
 				transactionHistory: createValidTransactionHistory(),
@@ -66,18 +64,20 @@ func TestTransactionHistoryStdoutRepository_Write(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			assert := assert.New(t)
 			oldStdout := os.Stdout // Save the original stdout
-			r, w, _ := os.Pipe()
-			os.Stdout = w
+			readFile, writeFile, _ := os.Pipe()
+			os.Stdout = writeFile
+			defer func() {
+				os.Stdout = oldStdout
+			}()
 
 			thsr := &repository.TransactionHistoryStdoutRepository{}
 			if err := thsr.Write(tt.args.ctx, tt.args.transactionHistory); (err != nil) != tt.wantErr {
 				t.Errorf("TransactionHistoryStdoutRepository.Write() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			w.Close()
+			_ = writeFile.Close()
 			var buf bytes.Buffer
-			_, _ = buf.ReadFrom(r)
-			os.Stdout = oldStdout
+			_, _ = buf.ReadFrom(readFile)
 			expectedOutput, _ := json.MarshalIndent(tt.wantResult, "", "  ")
 			assert.Equal(string(expectedOutput)+"\n", buf.String())
 		})
