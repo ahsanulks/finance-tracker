@@ -6,7 +6,7 @@ import (
 )
 
 type TransactionHistoryGetter interface {
-	FetchByPeriod(ctx context.Context, period entity.TransactionPeriod) ([]*entity.Transaction, error)
+	FetchByPeriodDesc(ctx context.Context, period entity.TransactionPeriod) ([]*entity.Transaction, error)
 }
 
 type TransactionHistoryWriter interface {
@@ -32,7 +32,7 @@ func (thu *TransactionHistoryUsecase) GenerateHistoryByPeriod(
 	ctx context.Context,
 	period entity.TransactionPeriod,
 ) error {
-	transactions, err := thu.transactionHistoryGetter.FetchByPeriod(ctx, period)
+	transactions, err := thu.transactionHistoryGetter.FetchByPeriodDesc(ctx, period)
 	if err != nil {
 		return err
 	}

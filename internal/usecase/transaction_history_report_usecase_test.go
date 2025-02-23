@@ -111,7 +111,7 @@ func newFakeTransactionHistoryGetter() *FakeTransactionHistoryGetter {
 	}
 }
 
-func (f *FakeTransactionHistoryGetter) FetchByPeriod(ctx context.Context, period entity.TransactionPeriod) ([]*entity.Transaction, error) {
+func (f *FakeTransactionHistoryGetter) FetchByPeriodDesc(ctx context.Context, period entity.TransactionPeriod) ([]*entity.Transaction, error) {
 	var result []*entity.Transaction
 	for _, transaction := range f.transactions {
 		if transaction.IsSamePeriod(period) {
