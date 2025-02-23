@@ -72,6 +72,11 @@ func newFakeTransactionHistoryGetter() *FakeTransactionHistoryGetter {
 	return &FakeTransactionHistoryGetter{
 		transactions: []*entity.Transaction{
 			entity.NewTransaction(
+				time.Date(2024, 1, 20, 0, 0, 0, 0, time.Local),
+				-100,
+				"test transaction expense 2024",
+			),
+			entity.NewTransaction(
 				time.Date(2025, 1, 30, 0, 0, 0, 0, time.Local),
 				100,
 				"test transaction income",
@@ -133,6 +138,9 @@ func newSpyTransactionHistoryWriter(t *testing.T) *SpyTransactionHistoryWriter {
 }
 
 func (s *SpyTransactionHistoryWriter) Write(ctx context.Context, transactionHistory *entity.TransactionHistory) error {
+	if transactionHistory.YearPeriod() == 2024 && transactionHistory.MonthPeriod() == 1 {
+		return errors.New("something wrongs when write transaction history")
+	}
 	s.assert.Equal(2025, transactionHistory.YearPeriod())
 	s.assert.Equal(1, transactionHistory.MonthPeriod())
 	s.assert.Equal(4, len(transactionHistory.Transactions()))
