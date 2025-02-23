@@ -1,5 +1,7 @@
 package entity
 
+import "errors"
+
 type TransactionHistory struct {
 	period           TransactionPeriod
 	totalIncome      int64
@@ -10,6 +12,16 @@ type TransactionHistory struct {
 type TransactionPeriod struct {
 	year  int
 	month int
+}
+
+func NewTransactionPeriod(year int, month int) (TransactionPeriod, error) {
+	if year < 1 {
+		return TransactionPeriod{}, errors.New("year must be greater than 0")
+	}
+	if month < 1 || month > 12 {
+		return TransactionPeriod{}, errors.New("month must be between 1 and 12")
+	}
+	return TransactionPeriod{year: year, month: month}, nil
 }
 
 func NewTransactionHistory(period TransactionPeriod, transactions []*Transaction) *TransactionHistory {

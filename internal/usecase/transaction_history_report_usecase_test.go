@@ -6,6 +6,7 @@ import (
 	"financetracker/internal/entity"
 	"financetracker/internal/usecase"
 	"testing"
+	"time"
 )
 
 func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
@@ -13,6 +14,8 @@ func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
 		ctx    context.Context
 		period entity.TransactionPeriod
 	}
+
+	transaction2025JanPeriod, _ := entity.NewTransactionPeriod(2025, 1)
 	tests := []struct {
 		name    string
 		args    args
@@ -30,7 +33,7 @@ func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
 			name: "when success get transaction history, should write generate transaction history report",
 			args: args{
 				ctx:    context.Background(),
-				period: entity.TransactionPeriod{},
+				period: transaction2025JanPeriod,
 			},
 			wantErr: false,
 		},
@@ -38,7 +41,10 @@ func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			thu := usecase.NewTransactionHistoryUsecase(
-				new(FakeTransactionHistoryGetter),
+				newFakeTransactionHistoryGetter(),
+				&SpyTransactionHistoryWriter{
+					t: t,
+				},
 			)
 			if err := thu.GenerateHistoryByPeriod(tt.args.ctx, tt.args.period); (err != nil) != tt.wantErr {
 				t.Errorf("TransactionHistoryUsecase.GenerateHistoryByPeriod() error = %v, wantErr %v", err, tt.wantErr)
@@ -49,8 +55,68 @@ func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
 
 var _ usecase.TransactionHistoryGetter = new(FakeTransactionHistoryGetter)
 
-type FakeTransactionHistoryGetter struct{}
+type FakeTransactionHistoryGetter struct {
+	transactions []*entity.Transaction
+}
+
+func newFakeTransactionHistoryGetter() *FakeTransactionHistoryGetter {
+	return &FakeTransactionHistoryGetter{
+		transactions: []*entity.Transaction{
+			entity.NewTransaction(
+				time.Date(2025, 1, 30, 0, 0, 0, 0, time.Local),
+				100,
+				"test transaction income",
+			),
+			entity.NewTransaction(
+				time.Date(2025, 1, 29, 0, 0, 0, 0, time.Local),
+				-100,
+				"test transaction expense",
+			),
+			entity.NewTransaction(
+				time.Date(2025, 1, 27, 0, 0, 0, 0, time.Local),
+				500,
+				"test transaction Income 2",
+			),
+			entity.NewTransaction(
+				time.Date(2025, 1, 20, 0, 0, 0, 0, time.Local),
+				-100,
+				"test transaction expense 2",
+			),
+			entity.NewTransaction(
+				time.Date(2025, 2, 1, 0, 0, 0, 0, time.Local),
+				-100,
+				"test transaction expense other period",
+			),
+
+			entity.NewTransaction(
+				time.Date(2024, 2, 1, 0, 0, 0, 0, time.Local),
+				100,
+				"test transaction income other period",
+			),
+		},
+	}
+}
 
 func (f *FakeTransactionHistoryGetter) FetchByPeriod(ctx context.Context, period entity.TransactionPeriod) ([]*entity.Transaction, error) {
-	return nil, errors.New("error when fetch transaction history")
+	var result []*entity.Transaction
+	for _, transaction := range f.transactions {
+		if transaction.IsSamePeriod(period) {
+			result = append(result, transaction)
+		}
+	}
+
+	if len(result) == 0 {
+		return nil, errors.New("error when fetch transaction history")
+	}
+	return result, nil
+}
+
+var _ usecase.TransactionHistoryWriter = new(SpyTransactionHistoryWriter)
+
+type SpyTransactionHistoryWriter struct {
+	t *testing.T
+}
+
+func (s *SpyTransactionHistoryWriter) Write(ctx context.Context, transactionHistory *entity.TransactionHistory) error {
+	return nil
 }
