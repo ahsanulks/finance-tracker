@@ -24,6 +24,13 @@ func NewTransactionCsvRepository(filePath string) *TransactionCsvRepository {
 	}
 }
 
+/*
+CSV template must follow the specified format, and no fields can be empty:
+date,amount,content
+- date: YYYY/MM/DD
+- amount: integer
+- content: string
+*/
 func (tcr *TransactionCsvRepository) FetchByPeriodDesc(
 	ctx context.Context,
 	transactionPeriod entity.TransactionPeriod,
