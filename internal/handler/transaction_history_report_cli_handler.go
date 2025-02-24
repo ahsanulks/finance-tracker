@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"errors"
 	"financetracker/internal/entity"
 	"fmt"
@@ -41,20 +42,36 @@ func ValidateCsvFileExist(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-type TransactionHistoryCli struct{}
+type TransactionHistoryReportGenerator interface {
+	GenerateHistoryByPeriod(ctx context.Context, period entity.TransactionPeriod) error
+}
+
+type TransactionHistoryCli struct {
+	transactionHistoryReportGenerator TransactionHistoryReportGenerator
+}
+
+func NewTransactionHistoryCli(
+	transactionHistoryReportGenerator TransactionHistoryReportGenerator,
+) *TransactionHistoryCli {
+	return &TransactionHistoryCli{
+		transactionHistoryReportGenerator: transactionHistoryReportGenerator,
+	}
+}
 
 func (thc *TransactionHistoryCli) GenerateTransactionHistoryReport(cmd *cobra.Command, args []string) error {
-	_, err := convertInputToTransactionPeriod(args[0])
+	transactionPeriod, err := convertInputToTransactionPeriod(args[0])
 	if err != nil {
 		return err
 	}
-	return nil
+	return thc.transactionHistoryReportGenerator.GenerateHistoryByPeriod(cmd.Context(), transactionPeriod)
 }
 
 func convertInputToTransactionPeriod(strDate string) (entity.TransactionPeriod, error) {
-	_, err := time.ParseInLocation(yearMonthInputFormat, strDate, time.Local)
+	date, err := time.ParseInLocation(yearMonthInputFormat, strDate, time.Local)
 	if err != nil {
 		return entity.TransactionPeriod{}, errors.New("invalid date format: must be YYYYMM")
 	}
-	return entity.TransactionPeriod{}, nil
+
+	transactionPeriod, _ := entity.NewTransactionPeriod(date.Year(), int(date.Month()))
+	return transactionPeriod, nil
 }
