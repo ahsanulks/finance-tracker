@@ -91,7 +91,7 @@ func TestValidateCsvFileExist(t *testing.T) {
 			name: "when file exists, should return nil",
 			args: args{
 				cmd:  &cobra.Command{},
-				args: []string{"202401", "valid_format.csv"},
+				args: []string{"202401", "../../test_data/valid_format.csv"},
 			},
 			wantErr: false,
 		},

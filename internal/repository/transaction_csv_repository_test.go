@@ -38,7 +38,7 @@ func TestTransactionCsvRepository_FetchByPeriodDesc(t *testing.T) {
 			args: args{
 				ctx:      context.Background(),
 				period:   transactionPeriod,
-				filePath: "test_data/empty_data.csv",
+				filePath: "../../test_data/empty_data.csv",
 			},
 			want:    nil,
 			wantErr: true,
@@ -48,7 +48,7 @@ func TestTransactionCsvRepository_FetchByPeriodDesc(t *testing.T) {
 			args: args{
 				ctx:      context.Background(),
 				period:   transactionPeriod,
-				filePath: "test_data/valid_format.csv",
+				filePath: "../../test_data/valid_format.csv",
 			},
 			want: []*entity.Transaction{
 				entity.NewTransaction(
@@ -74,7 +74,7 @@ func TestTransactionCsvRepository_FetchByPeriodDesc(t *testing.T) {
 			args: args{
 				ctx:      context.Background(),
 				period:   emptyTransactionPeriod,
-				filePath: "test_data/valid_format.csv",
+				filePath: "../../test_data/valid_format.csv",
 			},
 			want:    nil,
 			wantErr: true,
