@@ -43,3 +43,9 @@ func ValidateCsvFileExist(cmd *cobra.Command, args []string) error {
 	}
 	return nil
 }
+
+type TransactionHistoryCli struct{}
+
+func (thc *TransactionHistoryCli) GenerateTransactionHistoryReport(cmd *cobra.Command, args []string) error {
+	return nil
+}

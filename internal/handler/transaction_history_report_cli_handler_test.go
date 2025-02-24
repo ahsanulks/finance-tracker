@@ -104,3 +104,25 @@ func TestValidateCsvFileExist(t *testing.T) {
 		})
 	}
 }
+
+func TestTransactionHistoryCli_GenerateTransactionHistoryReport(t *testing.T) {
+	type args struct {
+		cmd  *cobra.Command
+		args []string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			thc := &handler.TransactionHistoryCli{}
+			if err := thc.GenerateTransactionHistoryReport(tt.args.cmd, tt.args.args); (err != nil) != tt.wantErr {
+				t.Errorf("TransactionHistoryCli.GenerateTransactionHistoryReport() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
