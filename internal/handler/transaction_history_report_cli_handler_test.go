@@ -45,6 +45,14 @@ func TestValidateTransactionHistoryArgs(t *testing.T) {
 			wantErr:    true,
 			wantErrMsg: "invalid date format: must be YYYYMM",
 		},
+		{
+			name: "when input valid should return nil",
+			args: args{
+				cmd:  &cobra.Command{},
+				args: []string{"202401", "file.csv"},
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
