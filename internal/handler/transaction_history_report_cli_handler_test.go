@@ -111,17 +111,30 @@ func TestTransactionHistoryCli_GenerateTransactionHistoryReport(t *testing.T) {
 		args []string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
+		name       string
+		args       args
+		wantErr    bool
+		wantErrMsg string
 	}{
-		// TODO: Add test cases.
+		{
+			name: "when failed parse transaction period, should return error",
+			args: args{
+				cmd:  &cobra.Command{},
+				args: []string{"-202010", "test.csv"},
+			},
+			wantErr:    true,
+			wantErrMsg: "invalid date format: must be YYYYMM",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			thc := &handler.TransactionHistoryCli{}
-			if err := thc.GenerateTransactionHistoryReport(tt.args.cmd, tt.args.args); (err != nil) != tt.wantErr {
+			err := thc.GenerateTransactionHistoryReport(tt.args.cmd, tt.args.args)
+			if (err != nil) != tt.wantErr {
 				t.Errorf("TransactionHistoryCli.GenerateTransactionHistoryReport() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if err != nil && err.Error() != tt.wantErrMsg {
+				t.Errorf("TransactionHistoryCli.GenerateTransactionHistoryReport() error message = %v, wantErrMessage %v", err, tt.wantErrMsg)
 			}
 		})
 	}
