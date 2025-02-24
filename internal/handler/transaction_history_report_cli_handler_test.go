@@ -27,6 +27,15 @@ func TestValidateTransactionHistoryArgs(t *testing.T) {
 			wantErr:    true,
 			wantErrMsg: "missing arguments: required <YYYYMM> <file-path>",
 		},
+		{
+			name: "when len args more than 2, should return error",
+			args: args{
+				cmd:  &cobra.Command{},
+				args: []string{"202401", "file.csv", "test"},
+			},
+			wantErr:    true,
+			wantErrMsg: "too many arguments: expected only <YYYYMM> <file-path>",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
