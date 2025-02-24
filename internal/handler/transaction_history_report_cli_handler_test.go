@@ -129,6 +129,14 @@ func TestTransactionHistoryCli_GenerateTransactionHistoryReport(t *testing.T) {
 			wantErr:    true,
 			wantErrMsg: "failed generate transaction history report",
 		},
+		{
+			name: "when success generate transaction history report, should return nil",
+			args: args{
+				cmd:  &cobra.Command{},
+				args: []string{"202410", "test.csv"},
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
