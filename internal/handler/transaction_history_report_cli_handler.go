@@ -2,8 +2,13 @@ package handler
 
 import (
 	"errors"
+	"time"
 
 	"github.com/spf13/cobra"
+)
+
+const (
+	yearMonthInputFormat = "200601" // YYYYMM format
 )
 
 var TransactionHistoryCmd = &cobra.Command{
@@ -20,6 +25,11 @@ func ValidateTransactionHistoryArgs(cmd *cobra.Command, args []string) error {
 
 	if len(args) > 2 {
 		return errors.New("too many arguments: expected only <YYYYMM> <file-path>")
+	}
+
+	_, err := time.ParseInLocation(yearMonthInputFormat, args[0], time.Local)
+	if err != nil {
+		return errors.New("invalid date format: must be YYYYMM")
 	}
 	return nil
 }
