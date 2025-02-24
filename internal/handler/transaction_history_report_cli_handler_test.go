@@ -30,7 +30,7 @@ func TestValidateTransactionHistoryArgs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := handler.ValidateTransactionHistoryArgs(tt.args.cmd, tt.args.args)
+			err := handler.TransactionHistoryCmd.Args(tt.args.cmd, tt.args.args)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ValidateTransactionHistoryArgs() error = %v, wantErr %v", err, tt.wantErr)
 			}
