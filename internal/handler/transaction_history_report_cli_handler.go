@@ -17,5 +17,9 @@ func ValidateTransactionHistoryArgs(cmd *cobra.Command, args []string) error {
 	if len(args) < 2 {
 		return errors.New("missing arguments: required <YYYYMM> <file-path>")
 	}
+
+	if len(args) > 2 {
+		return errors.New("too many arguments: expected only <YYYYMM> <file-path>")
+	}
 	return nil
 }
