@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"errors"
+
 	"github.com/spf13/cobra"
 )
 
@@ -12,5 +14,8 @@ var TransactionHistoryCmd = &cobra.Command{
 }
 
 func ValidateTransactionHistoryArgs(cmd *cobra.Command, args []string) error {
+	if len(args) < 2 {
+		return errors.New("missing arguments: required <YYYYMM> <file-path>")
+	}
 	return nil
 }
