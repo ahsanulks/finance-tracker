@@ -5,7 +5,7 @@ import (
 	"financetracker/internal/entity"
 )
 
-type TransactionHistoryGetter interface {
+type TransactionGetter interface {
 	FetchByPeriodDesc(ctx context.Context, period entity.TransactionPeriod) ([]*entity.Transaction, error)
 }
 
@@ -14,16 +14,16 @@ type TransactionHistoryWriter interface {
 }
 
 type TransactionHistoryUsecase struct {
-	transactionHistoryGetter TransactionHistoryGetter
+	transactionGetter        TransactionGetter
 	transactionHistoryWriter TransactionHistoryWriter
 }
 
 func NewTransactionHistoryUsecase(
-	transactionHistoryGetter TransactionHistoryGetter,
+	transactionGetter TransactionGetter,
 	transactionHistoryWriter TransactionHistoryWriter,
 ) *TransactionHistoryUsecase {
 	return &TransactionHistoryUsecase{
-		transactionHistoryGetter: transactionHistoryGetter,
+		transactionGetter:        transactionGetter,
 		transactionHistoryWriter: transactionHistoryWriter,
 	}
 }
@@ -32,7 +32,7 @@ func (thu *TransactionHistoryUsecase) GenerateHistoryByPeriod(
 	ctx context.Context,
 	period entity.TransactionPeriod,
 ) error {
-	transactions, err := thu.transactionHistoryGetter.FetchByPeriodDesc(ctx, period)
+	transactions, err := thu.transactionGetter.FetchByPeriodDesc(ctx, period)
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,9 @@
 package entity
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 type TransactionHistory struct {
 	period           TransactionPeriod
@@ -22,6 +25,10 @@ func NewTransactionPeriod(year int, month int) (TransactionPeriod, error) {
 		return TransactionPeriod{}, errors.New("month must be between 1 and 12")
 	}
 	return TransactionPeriod{year: year, month: month}, nil
+}
+
+func (tp TransactionPeriod) IsSamePeriod(transactionDate time.Time) bool {
+	return tp.year == transactionDate.Year() && tp.month == int(transactionDate.Month())
 }
 
 func NewTransactionHistory(period TransactionPeriod, transactions []*Transaction) *TransactionHistory {

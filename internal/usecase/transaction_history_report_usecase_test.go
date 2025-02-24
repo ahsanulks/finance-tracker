@@ -62,7 +62,7 @@ func TestTransactionHistoryUsecase_GenerateHistoryByPeriod(t *testing.T) {
 	}
 }
 
-var _ usecase.TransactionHistoryGetter = new(FakeTransactionHistoryGetter)
+var _ usecase.TransactionGetter = new(FakeTransactionHistoryGetter)
 
 type FakeTransactionHistoryGetter struct {
 	transactions []*entity.Transaction
