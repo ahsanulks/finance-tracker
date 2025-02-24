@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"encoding/csv"
+	"errors"
 	"financetracker/internal/entity"
 	"os"
 	"slices"
@@ -61,6 +62,10 @@ func (tcr *TransactionCsvRepository) FetchByPeriodDesc(
 		if transactionPeriod.IsSamePeriod(trxDate) {
 			transactions = append(transactions, entity.NewTransaction(trxDate, amount, record[2]))
 		}
+	}
+
+	if len(transactions) == 0 {
+		return nil, errors.New("no transaction found")
 	}
 
 	tcr.sortTransactionsDesc(transactions)
