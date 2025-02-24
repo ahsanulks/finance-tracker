@@ -1,8 +1,12 @@
 package handler_test
 
 import (
+	"context"
+	"errors"
+	"financetracker/internal/entity"
 	"financetracker/internal/handler"
 	"testing"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -120,7 +124,7 @@ func TestTransactionHistoryCli_GenerateTransactionHistoryReport(t *testing.T) {
 			name: "when failed generate transaction history report, should return error",
 			args: args{
 				cmd:  &cobra.Command{},
-				args: []string{"202014", "test.csv"},
+				args: []string{"202010", "test.csv"},
 			},
 			wantErr:    true,
 			wantErrMsg: "failed generate transaction history report",
@@ -128,7 +132,9 @@ func TestTransactionHistoryCli_GenerateTransactionHistoryReport(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			thc := &handler.TransactionHistoryCli{}
+			thc := handler.NewTransactionHistoryCli(
+				new(fakeTransactionHistoryReportGenerator),
+			)
 			err := thc.GenerateTransactionHistoryReport(tt.args.cmd, tt.args.args)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TransactionHistoryCli.GenerateTransactionHistoryReport() error = %v, wantErr %v", err, tt.wantErr)
@@ -138,4 +144,16 @@ func TestTransactionHistoryCli_GenerateTransactionHistoryReport(t *testing.T) {
 			}
 		})
 	}
+}
+
+var _ handler.TransactionHistoryReportGenerator = new(fakeTransactionHistoryReportGenerator)
+
+type fakeTransactionHistoryReportGenerator struct{}
+
+func (f *fakeTransactionHistoryReportGenerator) GenerateHistoryByPeriod(ctx context.Context, period entity.TransactionPeriod) error {
+	oct2020 := time.Date(2020, 10, 1, 0, 0, 0, 0, time.Local)
+	if period.IsSamePeriod(oct2020) {
+		return errors.New("failed generate transaction history report")
+	}
+	return nil
 }
