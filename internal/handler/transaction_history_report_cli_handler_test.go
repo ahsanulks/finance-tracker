@@ -66,3 +66,24 @@ func TestValidateTransactionHistoryArgs(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateCsvFileExist(t *testing.T) {
+	type args struct {
+		cmd  *cobra.Command
+		args []string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := handler.ValidateCsvFileExist(tt.args.cmd, tt.args.args); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateCsvFileExist() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
