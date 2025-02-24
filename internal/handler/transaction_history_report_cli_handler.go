@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"financetracker/internal/entity"
+	"financetracker/internal/repository"
+	"financetracker/internal/usecase"
 	"fmt"
 	"os"
 	"time"
@@ -16,11 +18,13 @@ const (
 )
 
 var TransactionHistoryCmd = &cobra.Command{
-	Use:     "fintrack <YYYYMM> <file-path>",
-	Long:    "Fintrack is a command-line tool that reads financial records from a specified file\nand filters them based on the given period (YYYYMM).\nThis helps in analyzing financial data efficiently.",
-	Example: "  fintrack 202403 data/transactions.csv",
-	Args:    ValidateTransactionHistoryArgs,
-	PreRunE: ValidateCsvFileExist,
+	Use:          "fintrack <YYYYMM> <file-path>",
+	Long:         "Fintrack is a command-line tool that reads financial records from a specified file\nand filters them based on the given period (YYYYMM).\nThis helps in analyzing financial data efficiently.",
+	Example:      "  fintrack 202403 data/transactions.csv",
+	Args:         ValidateTransactionHistoryArgs,
+	PreRunE:      ValidateCsvFileExist,
+	RunE:         ProcessGenerateTransactionHistoryReport,
+	SilenceUsage: true,
 }
 
 func ValidateTransactionHistoryArgs(cmd *cobra.Command, args []string) error {
@@ -40,6 +44,17 @@ func ValidateCsvFileExist(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("file not found: %s", args[1])
 	}
 	return nil
+}
+
+func ProcessGenerateTransactionHistoryReport(cmd *cobra.Command, args []string) error {
+	transactionCsvRepo := repository.NewTransactionCsvRepository(args[1])
+	transactionHistoryUsecase := usecase.NewTransactionHistoryUsecase(
+		transactionCsvRepo,
+		new(repository.TransactionHistoryStdoutRepository),
+	)
+	transactionHistoryCli := NewTransactionHistoryCli(transactionHistoryUsecase)
+
+	return transactionHistoryCli.GenerateTransactionHistoryReport(cmd, args)
 }
 
 type TransactionHistoryReportGenerator interface {
