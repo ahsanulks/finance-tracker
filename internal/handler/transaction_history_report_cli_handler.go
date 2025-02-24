@@ -47,5 +47,9 @@ func ValidateCsvFileExist(cmd *cobra.Command, args []string) error {
 type TransactionHistoryCli struct{}
 
 func (thc *TransactionHistoryCli) GenerateTransactionHistoryReport(cmd *cobra.Command, args []string) error {
+	_, err := time.ParseInLocation(yearMonthInputFormat, args[0], time.Local)
+	if err != nil {
+		return errors.New("invalid date format: must be YYYYMM")
+	}
 	return nil
 }
