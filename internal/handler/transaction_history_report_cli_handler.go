@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"financetracker/internal/entity"
 	"fmt"
 	"os"
 	"time"
@@ -30,10 +31,6 @@ func ValidateTransactionHistoryArgs(cmd *cobra.Command, args []string) error {
 		return errors.New("too many arguments: expected only <YYYYMM> <file-path>")
 	}
 
-	_, err := time.ParseInLocation(yearMonthInputFormat, args[0], time.Local)
-	if err != nil {
-		return errors.New("invalid date format: must be YYYYMM")
-	}
 	return nil
 }
 
@@ -47,9 +44,17 @@ func ValidateCsvFileExist(cmd *cobra.Command, args []string) error {
 type TransactionHistoryCli struct{}
 
 func (thc *TransactionHistoryCli) GenerateTransactionHistoryReport(cmd *cobra.Command, args []string) error {
-	_, err := time.ParseInLocation(yearMonthInputFormat, args[0], time.Local)
+	_, err := convertInputToTransactionPeriod(args[0])
 	if err != nil {
-		return errors.New("invalid date format: must be YYYYMM")
+		return err
 	}
 	return nil
+}
+
+func convertInputToTransactionPeriod(strDate string) (entity.TransactionPeriod, error) {
+	_, err := time.ParseInLocation(yearMonthInputFormat, strDate, time.Local)
+	if err != nil {
+		return entity.TransactionPeriod{}, errors.New("invalid date format: must be YYYYMM")
+	}
+	return entity.TransactionPeriod{}, nil
 }

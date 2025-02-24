@@ -37,15 +37,6 @@ func TestValidateTransactionHistoryArgs(t *testing.T) {
 			wantErrMsg: "too many arguments: expected only <YYYYMM> <file-path>",
 		},
 		{
-			name: "when date format not YYYYMM, shoudl return error",
-			args: args{
-				cmd:  &cobra.Command{},
-				args: []string{"20241", "file.csv"},
-			},
-			wantErr:    true,
-			wantErrMsg: "invalid date format: must be YYYYMM",
-		},
-		{
 			name: "when input valid should return nil",
 			args: args{
 				cmd:  &cobra.Command{},
