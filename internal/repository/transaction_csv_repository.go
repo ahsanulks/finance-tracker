@@ -59,34 +59,15 @@ func (tcr *TransactionCsvRepository) FetchByPeriodDesc(
 	// Channel to collect transactions
 	transactionCh := make(chan *entity.Transaction, transactionChanSize)
 	// WaitGroup to track worker completion
-	var wg sync.WaitGroup
+	wg := new(sync.WaitGroup)
 
 	// Start worker processing
 	for range numWorkers {
 		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for record := range recordCh {
-				trxDate, _ := time.ParseInLocation(csvTransactionDateFormat, record[0], time.Local)
-				if transactionPeriod.IsSamePeriod(trxDate) {
-					amount, _ := strconv.ParseInt(record[1], 10, 64)
-					transactionCh <- entity.NewTransaction(trxDate, amount, record[2])
-				}
-			}
-		}()
+		go tcr.processRecords(wg, recordCh, transactionCh, transactionPeriod)
 	}
 
-	// Read CSV records and send them to workers
-	go func() {
-		defer close(recordCh)
-		for {
-			record, err := reader.Read()
-			if err != nil {
-				break
-			}
-			recordCh <- record
-		}
-	}()
+	go tcr.readCsvRecords(reader, recordCh)
 
 	// Close transaction channel when all workers are done
 	go func() {
@@ -118,4 +99,28 @@ func (tcr *TransactionCsvRepository) sortTransactionsDesc(transactions []*entity
 		}
 		return 0
 	})
+}
+
+// process individual records and add it to transactionCh
+func (tcr *TransactionCsvRepository) processRecords(wg *sync.WaitGroup, recordCh <-chan []string, transactionCh chan<- *entity.Transaction, transactionPeriod entity.TransactionPeriod) {
+	defer wg.Done()
+	for record := range recordCh {
+		trxDate, _ := time.ParseInLocation(csvTransactionDateFormat, record[0], time.Local)
+		if transactionPeriod.IsSamePeriod(trxDate) {
+			amount, _ := strconv.ParseInt(record[1], 10, 64)
+			transactionCh <- entity.NewTransaction(trxDate, amount, record[2])
+		}
+	}
+}
+
+// Read CSV records and send them to recordCh
+func (tcr *TransactionCsvRepository) readCsvRecords(reader *csv.Reader, recordCh chan<- []string) {
+	defer close(recordCh)
+	for {
+		record, err := reader.Read()
+		if err != nil {
+			break
+		}
+		recordCh <- record
+	}
 }
