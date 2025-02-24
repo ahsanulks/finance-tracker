@@ -17,7 +17,17 @@ func TestValidateTransactionHistoryArgs(t *testing.T) {
 		args       args
 		wantErr    bool
 		wantErrMsg string
-	}{}
+	}{
+		{
+			name: "when len args less than 2, should return error",
+			args: args{
+				cmd:  &cobra.Command{},
+				args: []string{},
+			},
+			wantErr:    true,
+			wantErrMsg: "missing arguments: required <YYYYMM> <file-path>",
+		},
+	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := handler.ValidateTransactionHistoryArgs(tt.args.cmd, tt.args.args)
