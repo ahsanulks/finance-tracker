@@ -11,6 +11,7 @@ import (
 
 func TestTransactionCsvRepository_FetchByPeriodDesc(t *testing.T) {
 	transactionPeriod, _ := entity.NewTransactionPeriod(2022, 1)
+	emptyTransactionPeriod, _ := entity.NewTransactionPeriod(2025, 1)
 	type args struct {
 		ctx      context.Context
 		period   entity.TransactionPeriod
@@ -67,6 +68,16 @@ func TestTransactionCsvRepository_FetchByPeriodDesc(t *testing.T) {
 				),
 			},
 			wantErr: false,
+		},
+		{
+			name: "when there's no transaction that have same period, should return error",
+			args: args{
+				ctx:      context.Background(),
+				period:   emptyTransactionPeriod,
+				filePath: "test_data/valid_format.csv",
+			},
+			want:    nil,
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
