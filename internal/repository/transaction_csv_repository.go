@@ -8,11 +8,15 @@ import (
 	"os"
 	"slices"
 	"strconv"
+	"sync"
 	"time"
 )
 
 const (
 	csvTransactionDateFormat = "2006/01/02" //YYYY/MM/DD
+	recordChanSize           = 100
+	transactionChanSize      = 100
+	numWorkers               = 4
 )
 
 type TransactionCsvRepository struct {
@@ -50,18 +54,50 @@ func (tcr *TransactionCsvRepository) FetchByPeriodDesc(
 		return nil, err
 	}
 
-	var transactions []*entity.Transaction
-	for {
-		record, err := reader.Read()
-		if err != nil {
-			break
-		}
+	// Channel to send records for processing
+	recordCh := make(chan []string, recordChanSize)
+	// Channel to collect transactions
+	transactionCh := make(chan *entity.Transaction, transactionChanSize)
+	// WaitGroup to track worker completion
+	var wg sync.WaitGroup
 
-		amount, _ := strconv.ParseInt(record[1], 10, 64)
-		trxDate, _ := time.ParseInLocation(csvTransactionDateFormat, record[0], time.Local)
-		if transactionPeriod.IsSamePeriod(trxDate) {
-			transactions = append(transactions, entity.NewTransaction(trxDate, amount, record[2]))
+	// Start worker processing
+	for range numWorkers {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for record := range recordCh {
+				trxDate, _ := time.ParseInLocation(csvTransactionDateFormat, record[0], time.Local)
+				if transactionPeriod.IsSamePeriod(trxDate) {
+					amount, _ := strconv.ParseInt(record[1], 10, 64)
+					transactionCh <- entity.NewTransaction(trxDate, amount, record[2])
+				}
+			}
+		}()
+	}
+
+	// Read CSV records and send them to workers
+	go func() {
+		defer close(recordCh)
+		for {
+			record, err := reader.Read()
+			if err != nil {
+				break
+			}
+			recordCh <- record
 		}
+	}()
+
+	// Close transaction channel when all workers are done
+	go func() {
+		wg.Wait()
+		close(transactionCh)
+	}()
+
+	// Collect transactions
+	var transactions []*entity.Transaction
+	for trx := range transactionCh {
+		transactions = append(transactions, trx)
 	}
 
 	if len(transactions) == 0 {
