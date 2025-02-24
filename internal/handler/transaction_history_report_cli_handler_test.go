@@ -116,6 +116,15 @@ func TestTransactionHistoryCli_GenerateTransactionHistoryReport(t *testing.T) {
 			wantErr:    true,
 			wantErrMsg: "invalid date format: must be YYYYMM",
 		},
+		{
+			name: "when failed generate transaction history report, should return error",
+			args: args{
+				cmd:  &cobra.Command{},
+				args: []string{"202014", "test.csv"},
+			},
+			wantErr:    true,
+			wantErrMsg: "failed generate transaction history report",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
