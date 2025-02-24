@@ -87,6 +87,14 @@ func TestValidateCsvFileExist(t *testing.T) {
 			wantErr:    true,
 			wantErrMsg: "file not found: test.csv",
 		},
+		{
+			name: "when file exists, should return nil",
+			args: args{
+				cmd:  &cobra.Command{},
+				args: []string{"202401", "valid_format.csv"},
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
