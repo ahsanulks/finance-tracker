@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"financetracker/internal/entity"
-	"fmt"
+	"os"
 	"strconv"
 	"time"
 )
@@ -21,9 +21,9 @@ func (thsr *TransactionHistoryStdoutRepository) Write(
 	transactionHistory *entity.TransactionHistory,
 ) error {
 	transactionReport := NewTransactionReport(transactionHistory)
-	transactionReportByte, _ := json.MarshalIndent(transactionReport, "", "  ")
-	fmt.Println(string(transactionReportByte))
-	return nil
+	encoder := json.NewEncoder(os.Stdout)
+	encoder.SetIndent("", "  ")
+	return encoder.Encode(transactionReport)
 }
 
 type (
@@ -45,7 +45,7 @@ type (
 )
 
 func NewTransactionReport(transactionHistory *entity.TransactionHistory) *TransactionReport {
-	var transactions []*Transaction
+	transactions := make([]*Transaction, 0, len(transactionHistory.Transactions()))
 	for _, transaction := range transactionHistory.Transactions() {
 		transactions = append(transactions, &Transaction{
 			Date:    DailyDateReport(transaction.Date()),
