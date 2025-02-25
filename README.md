@@ -82,6 +82,7 @@ While Hexagonal Architecture focuses on isolating the business logic from extern
 Clean Architecture follows the same dependency rules as Hexagonal Architecture but further refines how business logic is organized.
 
 #### Conclusion
+![Finance Tracker Architecture](doc/image/finance_tracker_architecture.png)
 While both Hexagonal Architecture and Clean Architecture focus on separating business logic from external concerns, Clean Architecture provides a clearer structure by explicitly distinguishing Entities and Use Cases.
 
 By adopting Clean Architecture, we achieve:
