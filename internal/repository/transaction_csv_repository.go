@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"financetracker/internal/entity"
+	"fmt"
 	"os"
 	"slices"
 	"strconv"
@@ -51,7 +52,7 @@ func (tcr *TransactionCsvRepository) FetchByPeriodDesc(
 	// skip header
 	_, err = reader.Read()
 	if err != nil {
-		return nil, err
+		return nil, errors.New("unable to read the CSV header. please check the file format and try again")
 	}
 
 	// Channel to send records for processing
@@ -82,7 +83,7 @@ func (tcr *TransactionCsvRepository) FetchByPeriodDesc(
 	}
 
 	if len(transactions) == 0 {
-		return nil, errors.New("no transaction found")
+		return nil, fmt.Errorf("no transactions found for period %d-%02d in the CSV file", transactionPeriod.Year(), transactionPeriod.Month())
 	}
 
 	tcr.sortTransactionsDesc(transactions)
