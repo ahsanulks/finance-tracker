@@ -183,3 +183,19 @@ Future improvements could include:
 - Adding more filtering options, such as category-based filtering and date range selection
 - Limiting the number of transactions displayed to users instead of showing all transactions
   Displaying all transactions at once can lead to performance issues, especially with large datasets. Implementing pagination or a configurable limit would improve application responsiveness and prevent excessive resource consumption.
+
+## Usage
+1. Build binary file
+To build the executable binary, use the `make` command:  
+```Makefile
+make build
+```
+2. Run the Program
+Execute the program with the following command:
+```shell
+./fintrack <transaction period YYYYMM> <file path>
+```
+example
+```shell
+./fintrack 202201 test_data/valid_format.csv
+```
