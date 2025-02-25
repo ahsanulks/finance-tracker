@@ -120,6 +120,18 @@ The function follows these steps:
 7. Collect transactions from transactionCh until transactionCh is closed.
 8. Sort transactions in descending order and return the result.
 
+### Fake and Spy Instead of Mock
+For testing, I chose to use fakes and spies instead of mocks to substitute the real implementation of the interface. Using mocks in this context would be overkill due to the complexity involved.
+
+One major drawback of using mocks is that they can unintentionally expose implementation details in our tests. This creates a tight coupling between tests and the production code, meaning that any changes to the implementation require corresponding updates to the tests. Ideally, tests should focus on verifying the public interface rather than the internal workings of the code.
+
+As Martin Fowler explains:
+> A classic test only cares about the final state, not how that state was derived. Mockist tests, on the other hand, are more tightly coupled to the implementation details of a method. As a result, changes in how a method interacts with its dependencies often cause these tests to break.
+
+> Coupling tests to implementation details also makes refactoring more difficult, as even minor changes in the internal structure can lead to failing tests.
+
+For more insights on this topic, see [Coupling Test to Implementations](https://www.martinfowler.com/articles/mocksArentStubs.html#CouplingTestsToImplementations)
+
 ## Technology Choices
 ### Cobra Library
 Our goal is to build a robust and user-friendly CLI application, and Cobra provides an ideal framework for this purpose because:
