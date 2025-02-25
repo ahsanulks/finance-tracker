@@ -120,6 +120,14 @@ The function follows these steps:
 7. Collect transactions from transactionCh until transactionCh is closed.
 8. Sort transactions in descending order and return the result.
 
+## Technology Choices
+### Cobra Library
+Our goal is to build a robust and user-friendly CLI application, and Cobra provides an ideal framework for this purpose because:
+- It simplifies the process of building CLI applications by offering a structured approach similar to widely used tools like git and go, making it easy to create commands, subcommands, and flags with minimal setup.
+- It automatically generates help messages and usage instructions, eliminating the need for manual implementation.
+- It is widely adopted by major open-source projects such as Kubernetes, Docker, and many others, ensuring strong community support and reliability.
+- It provides lifecycle hooks (PreRun, Run, PostRun) that allow efficient execution of setup and cleanup tasks before or after command execution.
+
 ## Workflow
 ```mermaid
 flowchart TB
