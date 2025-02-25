@@ -49,6 +49,13 @@ date,amount,content
 - Condition assumptions:
   - If no transactions are found, the program will return an error.
 
+### 4. Requirement Challenge
+The challenge here is how we read the CSV file since the order of the rows is not guaranteed. This means we need to read all rows before processing them. Handling small CSV files is straightforward, but when dealing with large files, reading and processing them efficiently becomes more challenging.
+
+To optimize performance, we need to ensure our program runs efficiently without excessive processing time. At the same time, we must balance resource usage to avoid high memory consumption, which could lead to an Out of Memory error.
+
+How I solved this problem is explained in the [Worker Pool Pattern](#worker-pool-pattern) section.
+
 ## Design Decision
 ### Architecture Design
 To ensure future enhancements, such as changing the output format from JSON to a file, our architecture should be designed in a way that allows seamless modifications without affecting the business logic layer.
