@@ -51,7 +51,7 @@ func (tcr *TransactionCsvRepository) FetchByPeriodDesc(
 	// skip header
 	_, err = reader.Read()
 	if err != nil {
-		return nil, err
+		return nil, errors.New("unable to read the CSV header. please check the file format and try again")
 	}
 
 	// Channel to send records for processing
