@@ -27,6 +27,14 @@ func NewTransactionPeriod(year int, month int) (TransactionPeriod, error) {
 	return TransactionPeriod{year: year, month: month}, nil
 }
 
+func (tp TransactionPeriod) Year() int {
+	return tp.year
+}
+
+func (tp TransactionPeriod) Month() int {
+	return tp.month
+}
+
 func (tp TransactionPeriod) IsSamePeriod(transactionDate time.Time) bool {
 	return tp.year == transactionDate.Year() && tp.month == int(transactionDate.Month())
 }
