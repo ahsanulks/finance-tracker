@@ -7,13 +7,13 @@ The application should be able to:
 1. Read transaction data from a user-specified CSV file.
 2. Filter transactions by the specified period (`YYYYMM`). Only transactions within the given year and month should be processed.
 3. Calculate and return:
-   - Period should follow the format `YYYYMM`
-   - Total income
-   - Total expenditure
-   - List of transactions, including:
-     - Date
-     - Amount
-     - Content
+   - Period (`string`): Should follow the format `YYYYMM` (e.g., `202201` for January 2022).
+   - Total Income (`int`): The sum of all income transactions.
+   - Total Expenditure (`int`): The sum of all expenditure transactions.
+   - List of Transactions (`array` of objects), where each transaction includes:
+     - Date (`string`): Formatted as `YYYY/MM/DD` (e.g., `2022/01/15`).
+     - Amount (`string`): The transaction amount, stored as a string to preserve formatting.
+     - Content (`string`): A description or details of the transaction.
      - Transactions should be sorted in descending order by date.
 4. Output the results in JSON format to stdout.
 5. Expect an input CSV file with the following format:
@@ -186,7 +186,7 @@ Future improvements could include:
 
 ## Usage
 1. Build binary file
-To build the executable binary, use the `make` command:  
+To build the executable binary, use the `make` command:
 ```Makefile
 make build
 ```
