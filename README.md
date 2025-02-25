@@ -83,6 +83,43 @@ By adopting Clean Architecture, we achieve:
 
 Thus, for our project, we will implement **Clean Architecture** to ensure flexibility, scalability, and maintainability while keeping dependencies well structured.
 
+### Worker Pool Pattern
+In this case, we do not impose any strict limit on the size of the CSV file. It can be small or extremely large. To optimize performance, we utilize goroutine to read and process the file concurrently. However, if we were to create a separate goroutine for every line in the file, it would cause excessive memory usage, leading to potential memory overhead and, in the worst case, an Out-of-Memory (OOM) error.
+
+Instead of spawning an unlimited number of goroutine, we use a controlled number of workers through the worker pool pattern. This pattern ensures that:
+- The number of concurrent goroutine remains within a manageable limit, preventing system overload.
+- Processing remains efficient by distributing work among multiple workers without excessive context switching.
+- Resources such as CPU and memory are optimally utilized without unnecessary spikes.
+
+#### Data Flow
+```mermaid
+graph TD
+    A[Open CSV File] --> B[Initialize CSV Reader]
+    B --> C[Skip Header Row]
+    C -->|Create Channels| D{Start Workers}
+    D -->|Worker 1| E[Process Record]
+    D -->|Worker 2| F[Process Record]
+    D -->|Worker N| G[Process Record]
+    H[Read CSV Records] -->|Send to recordCh| D
+    E -->|Send to transactionCh| I[Collect Transactions]
+    F -->|Send to transactionCh| I
+    G -->|Send to transactionCh| I
+    I --> J[Wait All Worker Finish]
+    J --> K[Sort Transactions Desc]
+    K --> L[Return Transactions]
+```
+The function follows these steps:
+1. Open the CSV file and initialize a CSV reader.
+2. Skip the header row.
+3. Create channels:
+  a. recordCh: Sends CSV records to workers for processing.
+  b. transactionCh: Receives processed transactions.
+4. Spawn multiple worker goroutine that listen on recordCh, process records, and send transactions to transactionCh.
+5. A separate goroutine reads CSV records and sends them to recordCh.
+6. A goroutine waits for all workers to finish, then closes transactionCh.
+7. Collect transactions from transactionCh until transactionCh is closed.
+8. Sort transactions in descending order and return the result.
+
 ## Workflow
 ```mermaid
 flowchart TB
