@@ -7,13 +7,13 @@ The application should be able to:
 1. Read transaction data from a user-specified CSV file.
 2. Filter transactions by the specified period (`YYYYMM`). Only transactions within the given year and month should be processed.
 3. Calculate and return:
-   - Period should follow the format `YYYYMM`
-   - Total income
-   - Total expenditure
-   - List of transactions, including:
-     - Date
-     - Amount
-     - Content
+   - Period (`string`): Should follow the format `YYYYMM` (e.g., `202201` for January 2022).
+   - Total Income (`int`): The sum of all income transactions.
+   - Total Expenditure (`int`): The sum of all expenditure transactions.
+   - List of Transactions (`array` of objects), where each transaction includes:
+     - Date (`string`): Formatted as `YYYY/MM/DD` (e.g., `2022/01/15`).
+     - Amount (`string`): The transaction amount, stored as a string to preserve formatting.
+     - Content (`string`): A description or details of the transaction.
      - Transactions should be sorted in descending order by date.
 4. Output the results in JSON format to stdout.
 5. Expect an input CSV file with the following format:
@@ -49,6 +49,13 @@ date,amount,content
 - Condition assumptions:
   - If no transactions are found, the program will return an error.
 
+### 4. Requirement Challenge
+The challenge here is how we read the CSV file since the order of the rows is not guaranteed. This means we need to read all rows before processing them. Handling small CSV files is straightforward, but when dealing with large files, reading and processing them efficiently becomes more challenging.
+
+To optimize performance, we need to ensure our program runs efficiently without excessive processing time. At the same time, we must balance resource usage to avoid high memory consumption, which could lead to an Out of Memory error.
+
+How I solved this problem is explained in the [Worker Pool Pattern](#worker-pool-pattern) section.
+
 ## Design Decision
 ### Architecture Design
 To ensure future enhancements, such as changing the output format from JSON to a file, our architecture should be designed in a way that allows seamless modifications without affecting the business logic layer.
@@ -65,6 +72,7 @@ A structured approach to achieving this separation is Hexagonal Architecture, al
 - External systems interact with the core domain through ports (interfaces).
 - Implementations (adapters) can be swapped easily without modifying the business logic.
 - It becomes easier to test the business logic using test doubles for external dependencies.
+
 #### Clean Architecture
 ![Clean Architecture](doc/image/clean_architecture.jpg)
 While Hexagonal Architecture focuses on isolating the business logic from external systems, it does not specify how to structure the business logic itself. For a more structured and maintainable approach, we can adopt Clean Architecture, which introduces two key layers within the business logic:
@@ -74,14 +82,72 @@ While Hexagonal Architecture focuses on isolating the business logic from extern
 Clean Architecture follows the same dependency rules as Hexagonal Architecture but further refines how business logic is organized.
 
 #### Conclusion
+![Finance Tracker Architecture](doc/image/finance_tracker_architecture.png)
 While both Hexagonal Architecture and Clean Architecture focus on separating business logic from external concerns, Clean Architecture provides a clearer structure by explicitly distinguishing Entities and Use Cases.
 
 By adopting Clean Architecture, we achieve:
 - Better Separation of Concerns – Business rules are clearly defined and independent of external systems.
-- Easier Maintainability – Future enhancements (e.g., changing JSON output to a file) won’t affect the core business logic.
+- Easier Maintainability – Future enhancements (e.g., changing JSON output to a file) won't affect the core business logic.
 - Improved Testability – Business logic can be tested independently using test doubles.
 
 Thus, for our project, we will implement **Clean Architecture** to ensure flexibility, scalability, and maintainability while keeping dependencies well structured.
+
+### Worker Pool Pattern
+In this case, we do not impose any strict limit on the size of the CSV file. It can be small or extremely large. To optimize performance, we utilize goroutine to read and process the file concurrently. However, if we were to create a separate goroutine for every line in the file, it would cause excessive memory usage, leading to potential memory overhead and, in the worst case, an Out-of-Memory (OOM) error.
+
+Instead of spawning an unlimited number of goroutine, we use a controlled number of workers through the worker pool pattern. This pattern ensures that:
+- The number of concurrent goroutine remains within a manageable limit, preventing system overload.
+- Processing remains efficient by distributing work among multiple workers without excessive context switching.
+- Resources such as CPU and memory are optimally utilized without unnecessary spikes.
+
+#### Data Flow
+```mermaid
+graph TD
+    A[Open CSV File] --> B[Initialize CSV Reader]
+    B --> C[Skip Header Row]
+    C -->|Create Channels| D{Start Workers}
+    D -->|Worker 1| E[Process Record]
+    D -->|Worker 2| F[Process Record]
+    D -->|Worker N| G[Process Record]
+    H[Read CSV Records] -->|Send to recordCh| D
+    E -->|Send to transactionCh| I[Collect Transactions]
+    F -->|Send to transactionCh| I
+    G -->|Send to transactionCh| I
+    I --> J[Wait All Worker Finish]
+    J --> K[Sort Transactions Desc]
+    K --> L[Return Transactions]
+```
+The function follows these steps:
+1. Open the CSV file and initialize a CSV reader.
+2. Skip the header row.
+3. Create channels:
+  a. recordCh: Sends CSV records to workers for processing.
+  b. transactionCh: Receives processed transactions.
+4. Spawn multiple worker goroutine that listen on recordCh, process records, and send transactions to transactionCh.
+5. A separate goroutine reads CSV records and sends them to recordCh.
+6. A goroutine waits for all workers to finish, then closes transactionCh.
+7. Collect transactions from transactionCh until transactionCh is closed.
+8. Sort transactions in descending order and return the result.
+
+### Fake and Spy Instead of Mock
+For testing, I chose to use fakes and spies instead of mocks to substitute the real implementation of the interface. Using mocks in this context would be overkill due to the complexity involved.
+
+One major drawback of using mocks is that they can unintentionally expose implementation details in our tests. This creates a tight coupling between tests and the production code, meaning that any changes to the implementation require corresponding updates to the tests. Ideally, tests should focus on verifying the public interface rather than the internal workings of the code.
+
+As Martin Fowler explains:
+> A classic test only cares about the final state, not how that state was derived. Mockist tests, on the other hand, are more tightly coupled to the implementation details of a method. As a result, changes in how a method interacts with its dependencies often cause these tests to break.
+
+> Coupling tests to implementation details also makes refactoring more difficult, as even minor changes in the internal structure can lead to failing tests.
+
+For more insights on this topic, see [Coupling Test to Implementations](https://www.martinfowler.com/articles/mocksArentStubs.html#CouplingTestsToImplementations)
+
+## Technology Choices
+### Cobra Library
+Our goal is to build a robust and user-friendly CLI application, and Cobra provides an ideal framework for this purpose because:
+- It simplifies the process of building CLI applications by offering a structured approach similar to widely used tools like git and go, making it easy to create commands, subcommands, and flags with minimal setup.
+- It automatically generates help messages and usage instructions, eliminating the need for manual implementation.
+- It is widely adopted by major open-source projects such as Kubernetes, Docker, and many others, ensuring strong community support and reliability.
+- It provides lifecycle hooks (PreRun, Run, PostRun) that allow efficient execution of setup and cleanup tasks before or after command execution.
 
 ## Workflow
 ```mermaid
@@ -109,3 +175,27 @@ flowchart TB
 9. Refactor Code – Clean up and optimize the implementation while ensuring the tests still pass.
 10. Review & Optimize – Conduct a final review to improve performance, maintainability, and scalability.
 11. Complete Feature – Finalize and prepare the feature for deployment or merging.
+
+## Future Work
+Future improvements could include:
+- Adding transaction categories for each transaction
+  Categorizing transactions (e.g., income, investments, food, etc) would help users better understand their spending habits and generate meaningful financial reports.
+- Adding more filtering options, such as category-based filtering and date range selection
+- Limiting the number of transactions displayed to users instead of showing all transactions
+  Displaying all transactions at once can lead to performance issues, especially with large datasets. Implementing pagination or a configurable limit would improve application responsiveness and prevent excessive resource consumption.
+
+## Usage
+1. Build binary file
+To build the executable binary, use the `make` command:
+```Makefile
+make build
+```
+2. Run the Program
+Execute the program with the following command:
+```shell
+./fintrack <transaction period YYYYMM> <file path>
+```
+example
+```shell
+./fintrack 202201 test_data/valid_format.csv
+```
