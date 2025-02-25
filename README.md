@@ -72,6 +72,7 @@ A structured approach to achieving this separation is Hexagonal Architecture, al
 - External systems interact with the core domain through ports (interfaces).
 - Implementations (adapters) can be swapped easily without modifying the business logic.
 - It becomes easier to test the business logic using test doubles for external dependencies.
+
 #### Clean Architecture
 ![Clean Architecture](doc/image/clean_architecture.jpg)
 While Hexagonal Architecture focuses on isolating the business logic from external systems, it does not specify how to structure the business logic itself. For a more structured and maintainable approach, we can adopt Clean Architecture, which introduces two key layers within the business logic:
@@ -85,7 +86,7 @@ While both Hexagonal Architecture and Clean Architecture focus on separating bus
 
 By adopting Clean Architecture, we achieve:
 - Better Separation of Concerns – Business rules are clearly defined and independent of external systems.
-- Easier Maintainability – Future enhancements (e.g., changing JSON output to a file) won’t affect the core business logic.
+- Easier Maintainability – Future enhancements (e.g., changing JSON output to a file) won't affect the core business logic.
 - Improved Testability – Business logic can be tested independently using test doubles.
 
 Thus, for our project, we will implement **Clean Architecture** to ensure flexibility, scalability, and maintainability while keeping dependencies well structured.
@@ -173,3 +174,11 @@ flowchart TB
 9. Refactor Code – Clean up and optimize the implementation while ensuring the tests still pass.
 10. Review & Optimize – Conduct a final review to improve performance, maintainability, and scalability.
 11. Complete Feature – Finalize and prepare the feature for deployment or merging.
+
+## Future Work
+Future improvements could include:
+- Adding transaction categories for each transaction
+  Categorizing transactions (e.g., income, investments, food, etc) would help users better understand their spending habits and generate meaningful financial reports.
+- Adding more filtering options, such as category-based filtering and date range selection
+- Limiting the number of transactions displayed to users instead of showing all transactions
+  Displaying all transactions at once can lead to performance issues, especially with large datasets. Implementing pagination or a configurable limit would improve application responsiveness and prevent excessive resource consumption.
