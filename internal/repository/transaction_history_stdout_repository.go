@@ -45,7 +45,7 @@ type (
 )
 
 func NewTransactionReport(transactionHistory *entity.TransactionHistory) *TransactionReport {
-	var transactions []*Transaction
+	transactions := make([]*Transaction, 0, len(transactionHistory.Transactions()))
 	for _, transaction := range transactionHistory.Transactions() {
 		transactions = append(transactions, &Transaction{
 			Date:    DailyDateReport(transaction.Date()),
